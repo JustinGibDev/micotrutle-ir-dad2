@@ -27,14 +27,44 @@ function car_avoid () {
             turtleBit.run(DIR.Run_forward, 80)
         }
     } else {
+    	
+    }
+}
+function car_follow () {
+    if (distance_val > 9 && distance_val <= 30) {
+        turtleBit.run(DIR.Run_forward, 80)
+    } else if (distance_val > 6 && distance_val <= 9) {
+        turtleBit.state(MotorState.brake)
+    } else if (distance_val <= 6) {
+        turtleBit.run(DIR.Run_back, 80)
+    } else if (distance_val <= 30) {
+        turtleBit.state(MotorState.brake)
+    }
+}
+function car_Tracking () {
+    if (car_mode == 2) {
         basic.showLeds(`
-            . . . . .
-            . . . . .
-            # # # # #
-            . # # # .
-            . # . # .
+            . . # . .
+            . . # . .
+            . . # . .
+            . . # . .
+            . . # . .
             `)
-        turtleBit.OFFLed()
+        turtleBit.Led(LR.LeftSide, COLOR.red)
+        turtleBit.Led(LR.RightSide, COLOR.red)
+        if (turtleBit.LineTracking() == 2 || (turtleBit.LineTracking() == 3 || (turtleBit.LineTracking() == 5 || (turtleBit.LineTracking() == 6 || turtleBit.LineTracking() == 7)))) {
+            turtleBit.run(DIR.Run_forward, 60)
+        } else if (turtleBit.LineTracking() == 4) {
+            turtleBit.Motor(LR.LeftSide, MD.Back, 80)
+            turtleBit.Motor(LR.RightSide, MD.Forward, 80)
+        } else if (turtleBit.LineTracking() == 1) {
+            turtleBit.Motor(LR.LeftSide, MD.Forward, 80)
+            turtleBit.Motor(LR.RightSide, MD.Back, 80)
+        } else {
+            turtleBit.state(MotorState.brake)
+        }
+    } else {
+    	
     }
 }
 let val2 = 0
@@ -70,7 +100,17 @@ basic.forever(function () {
                 car_mode = 1
             } else {
                 car_mode = 0
+                basic.showLeds(`
+                    . . . . .
+                    . . . . .
+                    # # # # #
+                    . # # # .
+                    . # . # .
+                    `)
+                turtleBit.OFFLed()
             }
+        } else if (irRemote.returnIrButton() == irRemote.irButton(IrButton.Hash)) {
+            car_mode = 2
         } else {
             basic.showString("" + (val2))
         }
