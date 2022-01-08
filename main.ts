@@ -26,9 +26,19 @@ function car_avoid () {
             }
             turtleBit.run(DIR.Run_forward, 80)
         }
-    } else {
-    	
     }
+}
+function CarStop () {
+    turtleBit.state(MotorState.stop)
+    car_mode = 0
+    basic.showLeds(`
+        . . . . .
+        . . . . .
+        # # # # #
+        . # # # .
+        . # . # .
+        `)
+    turtleBit.OFFLed()
 }
 function car_follow () {
     if (distance_val > 9 && distance_val <= 30) {
@@ -63,8 +73,6 @@ function car_Tracking () {
         } else {
             turtleBit.state(MotorState.brake)
         }
-    } else {
-    	
     }
 }
 let val2 = 0
@@ -76,6 +84,7 @@ let strip = neopixel.create(DigitalPin.P8, 4, NeoPixelMode.RGB)
 basic.forever(function () {
     val = irRemote.returnIrButton()
     car_avoid()
+    car_Tracking()
     if (val != 0) {
         val2 = val
         if (val2 == 70) {
@@ -99,18 +108,14 @@ basic.forever(function () {
             if (car_mode == 0) {
                 car_mode = 1
             } else {
-                car_mode = 0
-                basic.showLeds(`
-                    . . . . .
-                    . . . . .
-                    # # # # #
-                    . # # # .
-                    . # . # .
-                    `)
-                turtleBit.OFFLed()
+                CarStop()
             }
-        } else if (irRemote.returnIrButton() == irRemote.irButton(IrButton.Hash)) {
-            car_mode = 2
+        } else if (val2 == 74) {
+            if (car_mode == 0) {
+                car_mode = 2
+            } else {
+                CarStop()
+            }
         } else {
             basic.showString("" + (val2))
         }
